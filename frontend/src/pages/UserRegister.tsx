@@ -1,35 +1,63 @@
 import { useState } from "react";
-import axios from "axios";
+import { register } from "../api/authapi";
 import InputField from "../components/form/input/InputField";
 import Button from "../components/ui/Button/Button";
 import Label from "../components/form/Label";
 
+interface FormData {
+  name: string;
+  email: string;
+  password: string;
+  role: string;
+}
+
 const UserRegister = () => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
     password: "",
-    role: "staff"
+    role: "staff",
   });
 
   const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [message, setMessage] = useState(""); // success or error message
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    setErrorMessage("");
+    setMessage("");
 
     try {
-      const res = await axios.post("http://localhost:5000/api/users/register", formData);
-      alert(res.data.message);
-      setFormData({ name: "", email: "", password: "", role: "staff" });
+      // ✅ Get token from localStorage
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setMessage("You must be logged in as admin to register a user.");
+        setLoading(false);
+        return;
+      }
+
+      // ✅ Pass token to the register function
+      const res = await register(formData, token);
+
+      if (res.success) {
+        setMessage(`User ${formData.email} registered successfully!`);
+        setFormData({
+          name: "",
+          email: "",
+          password: "",
+          role: "staff",
+        });
+      } else {
+        setMessage(res.message);
+      }
     } catch (error: any) {
-      setErrorMessage(error.response?.data?.message || "Registration Failed");
+      setMessage(error.response?.data?.message || "Registration failed");
     } finally {
       setLoading(false);
     }
@@ -39,7 +67,15 @@ const UserRegister = () => {
     <div className="p-6 max-w-md mx-auto">
       <h1 className="text-2xl font-bold mb-6">User Register</h1>
 
-      {errorMessage && <p className="text-red-500 mb-4">{errorMessage}</p>}
+      {message && (
+        <p
+          className={`mb-4 ${
+            message.includes("successfully") ? "text-green-600" : "text-red-500"
+          }`}
+        >
+          {message}
+        </p>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>

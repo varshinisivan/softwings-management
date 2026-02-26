@@ -1,7 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-
 import SignIn from "./pages/AuthPages/SignIn";
-// import SignUp removed because you don't want it
 import NotFound from "./pages/OtherPage/NotFound";
 import UserProfiles from "./pages/UserProfiles";
 import Videos from "./pages/UiElements/Videos";
@@ -23,15 +21,25 @@ import Home from "./pages/Dashboard/Home";
 import UserRegister from "./pages/UserRegister";
 import AllUsers from "./pages/AllUsers";
 
-// 🔥 NEW
+// 🔥 Client Management
+import AddClient from "./pages/ClientManagement/AddClients";
+import AllClients from "./pages/ClientManagement/AllClients";
+import ClientView from "./pages/ClientManagement/ClientView";
+import ClientEdit from "./pages/ClientManagement/ClientEdit";
+
+// 🔔 Renewal Reminder
+import RenewalReminder from "./pages/RenewalReminder";
+
+// 🔐 Private Route
 import PrivateRoute from "./components/PrivateRoute";
 
 function App() {
   return (
     <Router>
       <ScrollToTop />
+
       <Routes>
-        {/* Protected Dashboard & User Management */}
+        {/* ================= PROTECTED ROUTES ================= */}
         <Route
           element={
             <PrivateRoute>
@@ -39,7 +47,10 @@ function App() {
             </PrivateRoute>
           }
         >
+          {/* Dashboard */}
           <Route path="/" element={<Home />} />
+
+          {/* General */}
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/profile" element={<UserProfiles />} />
           <Route path="/form-elements" element={<FormElements />} />
@@ -54,17 +65,24 @@ function App() {
           <Route path="/images" element={<Images />} />
           <Route path="/videos" element={<Videos />} />
 
-          {/* 🔥 User Management */}
+          {/* 👤 User Management */}
           <Route path="/user-register" element={<UserRegister />} />
           <Route path="/all-users" element={<AllUsers />} />
+
+          {/* 🏢 Client Management */}
+          <Route path="/clients/add" element={<AddClient />} />
+          <Route path="/clients" element={<AllClients />} />
+          <Route path="/clients/view/:id" element={<ClientView />} />
+          <Route path="/clients/edit/:id" element={<ClientEdit />} />
+
+          {/* 🔔 Renewal Reminder */}
+          <Route path="/renewals" element={<RenewalReminder />} />
         </Route>
 
-        {/* Public Auth Pages */}
+        {/* ================= PUBLIC ROUTES ================= */}
         <Route path="/signin" element={<SignIn />} />
-        {/* SignUp route removed */}
-        {/* <Route path="/signup" element={<SignUp />} /> */}
 
-        {/* 404 */}
+        {/* ================= 404 ================= */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
