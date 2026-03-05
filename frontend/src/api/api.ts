@@ -19,27 +19,19 @@ const api = axios.create({
 });
 
 /**
- * Helper function to set or remove Authorization header
+ * 🔥 Attach token automatically BEFORE EVERY request
  */
-export function setAuthToken(token: string | null) {
-  if (token) {
-    api.defaults.headers.common[
-      "Authorization"
-    ] = `Bearer ${token}`;
-  } else {
-    delete api.defaults.headers.common[
-      "Authorization"
-    ];
-  }
-}
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
 
-/**
- * 🔥 IMPORTANT FIX
- * Automatically attach token on app start
- */
-const token = localStorage.getItem("token");
-if (token) {
-  setAuthToken(token);
-}
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 export default api;

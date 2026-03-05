@@ -1,4 +1,4 @@
-import api, { setAuthToken } from "./api";
+import api from "./api";
 
 // ==================
 // Interfaces
@@ -37,9 +37,8 @@ export const login = async (
   const response = await api.post<AuthResponse>("/users/login", payload);
 
   if (response.data.token) {
-    // Store token and attach to all future requests
+    // ✅ Only store token
     localStorage.setItem("token", response.data.token);
-    setAuthToken(response.data.token);
   }
 
   return response.data;
@@ -51,13 +50,11 @@ export const login = async (
 export const register = async (
   payload: RegisterPayload
 ): Promise<AuthResponse> => {
-  // ✅ Attach token from localStorage automatically
-  const token = localStorage.getItem("token");
-  if (token) {
-    setAuthToken(token);
-  }
+  const response = await api.post<AuthResponse>(
+    "/users/register",
+    payload
+  );
 
-  const response = await api.post<AuthResponse>("/users/register", payload);
   return response.data;
 };
 
@@ -66,5 +63,4 @@ export const register = async (
 // ==================
 export const logout = (): void => {
   localStorage.removeItem("token");
-  setAuthToken(null); // Remove Authorization header
 };

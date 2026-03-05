@@ -1,8 +1,9 @@
+// controllers/renewalController.js
 const Client = require("../models/client.js");
+
 exports.getRenewals = async (req, res) => {
   try {
     const clients = await Client.find();
-
     const today = new Date();
 
     let renewals = [];
@@ -10,42 +11,34 @@ exports.getRenewals = async (req, res) => {
     let urgentRenewals = 0;
 
     clients.forEach((client) => {
-      if (!client.services) return;
+      if (!client.services || client.services.length === 0) return;
 
-      const serviceTypes = ["hosting", "domain", "ssl", "amc"];
+      client.services.forEach((service) => {
+        if (!service.endDate) return;
 
-      serviceTypes.forEach((type) => {
-        const servicesArray = client.services[type];
+        const expiry = new Date(service.endDate);
+        const daysRemaining = Math.ceil(
+          (expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+        );
 
-        if (!servicesArray || servicesArray.length === 0) return;
-
-        servicesArray.forEach((service) => {
-          if (!service.expiryDate) return;
-
-          const expiry = new Date(service.expiryDate);
-          const daysRemaining = Math.ceil(
-            (expiry - today) / (1000 * 60 * 60 * 24)
-          );
-
-          renewals.push({
-            clientId: client._id,
-            companyName: client.companyName,
-            contactPerson: client.contactPerson,
-            mobile: client.mobile,
-            email: client.email,
-            serviceType: type.toUpperCase(),
-            serviceName: service.name,
-            amount: service.amount,
-            expiryDate: service.expiryDate,
-            daysRemaining,
-          });
-
-          expectedRevenue += service.amount;
-
-          if (daysRemaining <= 7 && daysRemaining >= 0) {
-            urgentRenewals++;
-          }
+        renewals.push({
+          clientId: client._id,
+          companyName: client.companyName,
+          contactPerson: client.contactPerson,
+          mobile: client.mobile,
+          email: client.email,
+          serviceType: service.serviceType.toUpperCase(),
+          serviceName: service.planName,
+          amount: service.amount,
+          expiryDate: service.endDate,
+          daysRemaining,
         });
+
+        expectedRevenue += service.amount || 0;
+
+        if (daysRemaining <= 7 && daysRemaining >= 0) {
+          urgentRenewals++;
+        }
       });
     });
 

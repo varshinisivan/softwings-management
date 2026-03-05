@@ -1,33 +1,42 @@
-// routes/clientRoutes.js
 const express = require("express");
 const router = express.Router();
-const authMiddleware = require("../middleware/authMiddleware");
-const authorizeRoles = require("../middleware/roleMiddleware");
-const {
-  addClient,
-  getAllClients,
-  getClientById,
-  updateClient,
-  deleteClient,
-  checkEmailExists,
-} = require("../controllers/clientController");
+const clientController = require("../controllers/clientController");
 
-// ===== Add client (Admin & Manager) =====
-router.post("/", authMiddleware, authorizeRoles("admin", "manager"), addClient);
 
-// ===== Get all clients (All roles) =====
-router.get("/", authMiddleware, authorizeRoles("admin", "manager", "staff"), getAllClients);
+// =====================================================
+// ================= CLIENT ROUTES =====================
+// =====================================================
 
-// ===== Get single client =====
-router.get("/:id", authMiddleware, authorizeRoles("admin", "manager", "staff"), getClientById);
+// CREATE CLIENT
+router.post("/", clientController.createClient);
 
-// ===== Update client (Admin & Manager) =====
-router.put("/:id", authMiddleware, authorizeRoles("admin", "manager"), updateClient);
+// GET ALL CLIENTS
+router.get("/", clientController.getClients);
 
-// ===== Delete client (Admin & Manager) =====
-router.delete("/:id", authMiddleware, authorizeRoles("admin", "manager"), deleteClient);
+// GET SINGLE CLIENT
+router.get("/:id", clientController.getClientById);
 
-// ===== Optional: Check email (Admin & Manager) =====
-router.post("/check-email", authMiddleware, authorizeRoles("admin", "manager"), checkEmailExists);
+// UPDATE CLIENT
+router.put("/:id", clientController.updateClient);
+
+// DELETE CLIENT
+router.delete("/:id", clientController.deleteClient);
+
+
+
+// =====================================================
+// ================= SERVICE ROUTES ====================
+// =====================================================
+
+// ADD NEW SERVICE TO CLIENT
+router.post("/:id/services", clientController.addService);
+
+// UPDATE SINGLE SERVICE
+router.put("/:id/services/:serviceId", clientController.updateService);
+
+// DELETE SINGLE SERVICE
+router.delete("/:id/services/:serviceId", clientController.deleteService);
+
+
 
 module.exports = router;

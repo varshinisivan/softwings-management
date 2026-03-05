@@ -17,14 +17,30 @@ app.use(express.json());
 // -------------------------
 // Routes
 // -------------------------
+
+// User Routes
 const userRoutes = require("./routes/userRoutes");
-const clientRoutes = require('./routes/clientRoutes');
+
+// Client Routes
+const clientRoutes = require("./routes/clientRoutes");
+
+// Renewal Routes
+const renewalRoutes = require("./routes/renewalRoutes");
+
+// ✅ Profit Report Routes (NEW)
+const reportRoutes = require("./routes/reportRoutes");
+//Dashboard Routes
+const dashboardRoutes = require("./routes/dashboardRoutes");
 
 // Mount routes
 app.use("/api/users", userRoutes);
-app.use("/api/clients", clientRoutes);  // Client management
-const renewalRoutes = require("./routes/renewalRoutes");
+app.use("/api/clients", clientRoutes);
 app.use("/api/renewals", renewalRoutes);
+app.use("/api/dashboard", dashboardRoutes);
+
+// ✅ Mount Report Route
+app.use("/api/reports", reportRoutes);
+
 // -------------------------
 // Test Route
 // -------------------------
@@ -36,7 +52,8 @@ app.get("/", (req, res) => {
 // MongoDB Connection
 // -------------------------
 const PORT = process.env.PORT || 5000;
-const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/softwings";
+const MONGO_URI =
+  process.env.MONGO_URI || "mongodb://127.0.0.1:27017/softwings";
 
 mongoose
   .connect(MONGO_URI)
@@ -58,5 +75,8 @@ mongoose
 // -------------------------
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ success: false, message: "Server Error" });
+  res.status(500).json({
+    success: false,
+    message: "Server Error",
+  });
 });
