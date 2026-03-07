@@ -128,7 +128,18 @@ const AddClient: React.FC = () => {
       });
 
       alert("Client Added Successfully ✅");
-      navigate("/all-clients");
+
+      // RESET FORM INSTEAD OF NAVIGATION
+      setClientData({
+        companyName: "",
+        contactPerson: "",
+        email: "",
+        mobile: "",
+        address: "",
+      });
+
+      setServices([]);
+
     } catch (error) {
       console.error(error);
       alert("Error adding client");
@@ -139,7 +150,7 @@ const AddClient: React.FC = () => {
     <div className="p-8 bg-gray-50 min-h-screen">
       <div className="max-w-6xl mx-auto">
 
-        {/* ================= Header ================= */}
+        {/* Header */}
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-gray-800">
             Client Onboarding
@@ -149,7 +160,7 @@ const AddClient: React.FC = () => {
           </p>
         </div>
 
-        {/* ================= Company Details ================= */}
+        {/* Company Details */}
         <div className="bg-white rounded-2xl shadow-sm p-6 mb-8">
           <h3 className="text-lg font-semibold mb-4">Company Details</h3>
 
@@ -172,7 +183,7 @@ const AddClient: React.FC = () => {
           </div>
         </div>
 
-        {/* ================= Services ================= */}
+        {/* Services */}
         <div className="bg-white rounded-2xl shadow-sm p-6">
           <h3 className="text-lg font-semibold mb-6">Services</h3>
 
@@ -303,7 +314,6 @@ const AddClient: React.FC = () => {
         </div>
       </div>
 
-      {/* Styling */}
       <style>{`
         .input-style {
           width: 100%;
