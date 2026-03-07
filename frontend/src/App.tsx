@@ -40,7 +40,7 @@ import ClientEdit from "./components/ClientManagement/ClientEdit";
 
 // Renewal & Reports
 import RenewalReminder from "./components/RenewalReminder";
-import ProfitReport from "./pages/Reports/ProfitReport";
+import ProfitReport from "./components/profit/ProfitReport";
 
 // User Profile Pages
 import EditProfile from "./components/UserProfile/EditProfile";
