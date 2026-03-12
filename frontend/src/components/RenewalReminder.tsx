@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getRenewals } from "../api/renewalApi";
+import { getRenewals } from "../api/renewalapi";
 
 interface ServiceRenewal {
   serviceType: string;
