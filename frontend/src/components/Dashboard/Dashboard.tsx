@@ -148,7 +148,7 @@ export default function Dashboard() {
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie data={chartData} dataKey="value" outerRadius={100} label>
-                  {chartData.map((entry, index) => (
+                  {chartData.map((_, index) => (
                     <Cell key={index} fill={COLORS[index]} />
                   ))}
                 </Pie>
@@ -169,46 +169,6 @@ export default function Dashboard() {
                 <Bar dataKey="revenue" fill="#3B82F6" />
               </BarChart>
             </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Renewal Table */}
-        <div className="bg-white rounded-3xl shadow-xl p-8 mb-12">
-          <h2 className="text-xl font-semibold mb-6">Upcoming Renewals</h2>
-
-          <table className="w-full">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="p-3 text-left">Client</th>
-                <th className="p-3 text-left">Service</th>
-                <th className="p-3 text-left">Expiry</th>
-                <th className="p-3 text-left">Status</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              <tr className="border-b">
-                <td className="p-3">ABC Company</td>
-                <td className="p-3">Hosting</td>
-                <td className="p-3">2026-03-25</td>
-                <td className="p-3">
-                  <span className="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs">
-                    Expiring Soon
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        {/* Activity Timeline */}
-        <div className="bg-white rounded-3xl shadow-xl p-8 mb-12">
-          <h2 className="text-xl font-semibold mb-6">Recent Activity</h2>
-
-          <div className="space-y-5">
-            <Activity text="New client added - ABC Technologies" color="bg-green-500" />
-            <Activity text="Hosting activated for XYZ Solutions" color="bg-blue-500" />
-            <Activity text="Domain renewal due for ABC Company" color="bg-yellow-500" />
           </div>
         </div>
 
@@ -258,16 +218,6 @@ function OverviewStat({ label, value }: any) {
       <p className="text-4xl font-bold mt-3">
         <CountUp end={value} duration={2} separator="," />
       </p>
-    </div>
-  );
-}
-
-/* Activity */
-function Activity({ text, color }: any) {
-  return (
-    <div className="flex items-center gap-4">
-      <div className={`w-3 h-3 rounded-full ${color}`}></div>
-      <p>{text}</p>
     </div>
   );
 }
