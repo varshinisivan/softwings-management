@@ -46,10 +46,10 @@ interface ReportData {
 }
 
 const serviceColors: Record<string, string> = {
-  hosting: "#3B82F6", // Blue
-  domain: "#10B981",  // Emerald
-  ssl: "#8B5CF6",     // Purple
-  amc: "#F59E0B",     // Orange
+  hosting: "#3B82F6",
+  domain: "#10B981",
+  ssl: "#8B5CF6",
+  amc: "#F59E0B",
 };
 
 const ProfitReport: React.FC = () => {
@@ -87,7 +87,6 @@ const ProfitReport: React.FC = () => {
       </div>
     );
 
-  // Convert serviceWise to array for charting
   const serviceChartData = Object.keys(report.serviceWise).map((type) => ({
     name: type.charAt(0).toUpperCase() + type.slice(1),
     ...report.serviceWise[type],
@@ -170,7 +169,14 @@ const ProfitReport: React.FC = () => {
             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
             <XAxis dataKey="name" stroke="#6b7280" />
             <YAxis stroke="#6b7280" />
-            <Tooltip formatter={(value: number) => `₹${value.toLocaleString()}`} />
+
+            <Tooltip
+              formatter={(value) =>
+                typeof value === "number"
+                  ? `₹${value.toLocaleString()}`
+                  : value
+              }
+            />
 
             <Bar dataKey="profit" radius={[8, 8, 0, 0]}>
               {serviceChartData.map((entry, index) => (
@@ -183,6 +189,7 @@ const ProfitReport: React.FC = () => {
           </BarChart>
         </ResponsiveContainer>
       </div>
+
     </div>
   );
 };
