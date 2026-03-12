@@ -78,9 +78,9 @@ const AddClient: React.FC = () => {
     value: any
   ) => {
     const updated = [...services];
-    updated[index][field] = value;
 
-    const service = updated[index];
+    const service = updated[index] as ServiceItem;
+    (service as any)[field] = value;
 
     if (
       !service.manualEndDate &&
@@ -99,6 +99,7 @@ const AddClient: React.FC = () => {
       service.manualEndDate = true;
     }
 
+    updated[index] = service;
     setServices(updated);
   };
 
@@ -129,7 +130,6 @@ const AddClient: React.FC = () => {
 
       alert("Client Added Successfully ✅");
 
-      // RESET FORM INSTEAD OF NAVIGATION
       setClientData({
         companyName: "",
         contactPerson: "",
@@ -139,7 +139,6 @@ const AddClient: React.FC = () => {
       });
 
       setServices([]);
-
     } catch (error) {
       console.error(error);
       alert("Error adding client");
@@ -202,10 +201,7 @@ const AddClient: React.FC = () => {
           </div>
 
           {services.map((service, index) => (
-            <div
-              key={index}
-              className="border rounded-xl p-6 mb-6 bg-gray-50"
-            >
+            <div key={index} className="border rounded-xl p-6 mb-6 bg-gray-50">
               <div className="flex justify-between mb-4">
                 <h4 className="font-semibold capitalize">
                   {service.serviceType} Service
@@ -235,7 +231,7 @@ const AddClient: React.FC = () => {
                   className="input-style"
                   value={service.amount}
                   onChange={(e) =>
-                    handleServiceChange(index, "amount", e.target.value)
+                    handleServiceChange(index, "amount", Number(e.target.value))
                   }
                 />
 
