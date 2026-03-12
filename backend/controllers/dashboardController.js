@@ -1,5 +1,5 @@
 // controllers/dashboardController.js
-const Client = require("../models/Client");
+const Client = require("../models/client");
 exports.getDashboardOverview = async (req, res) => {
   try {
     const totalClients = await Client.countDocuments();
