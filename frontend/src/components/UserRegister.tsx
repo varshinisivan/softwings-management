@@ -1,8 +1,9 @@
+// src/components/UserRegister.tsx
 import { useState } from "react";
 import { register } from "../api/authapi";
 import InputField from "./form/input/InputField";
 import Label from "./form/Label";
-import Button from "./ui/button/Button"; // ✅ ensure path is correct
+import Button from "./ui/button/Button"; // ✅ make sure this path exists
 
 interface FormData {
   name: string;
@@ -41,7 +42,8 @@ const UserRegister = () => {
         return;
       }
 
-      const res = await register(formData, token);
+      // ✅ pass only formData if register only accepts one argument
+      const res = await register(formData); 
 
       if (res.success) {
         setMessage(`User ${formData.email} registered successfully!`);

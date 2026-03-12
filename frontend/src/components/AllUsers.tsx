@@ -3,10 +3,7 @@ import { useEffect, useState, useCallback } from "react";
 import { getAllUsers, updateUser, deleteUser } from "../api/userapi";
 import { logout } from "../api/authapi";
 import { useNavigate } from "react-router-dom";
-import {
-  PencilSquareIcon,
-  TrashIcon,
-} from "@heroicons/react/24/solid";
+import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/solid";
 
 interface User {
   _id: string;
@@ -40,19 +37,19 @@ const AllUsers = () => {
   // ================= FETCH USERS =================
   const fetchUsers = useCallback(async () => {
     try {
-      const res = await getAllUsers();
+      const res: any[] = await getAllUsers(); // ✅ cast as any[]
 
       if (!Array.isArray(res)) {
         console.error("Users response is not array:", res);
         return;
       }
 
-      // Normalize _id: use Mongo _id or fallback, ensure isActive boolean
-      const normalizedUsers = res.map((u) => ({
+      // Normalize _id and ensure isActive boolean
+      const normalizedUsers: User[] = res.map((u: any) => ({
         ...u,
-        _id: u._id || u.id || "",
+        _id: u._id || "",
         name: u.name || u.fullName || "",
-        isActive: u.isActive ?? false, // ✅ ensure boolean
+        isActive: u.isActive ?? false,
       }));
 
       setUsers(normalizedUsers);
@@ -74,7 +71,7 @@ const AllUsers = () => {
 
   // ================= INLINE EDIT =================
   const startEditing = (user: User) => {
-    if (!user._id) return; // safety check
+    if (!user._id) return;
     setEditingUserId(user._id);
     setEditForm({
       ...user,
@@ -112,13 +109,14 @@ const AllUsers = () => {
 
       const updatedUser = await updateUser(id, payload);
 
-      // ✅ ensure isActive is boolean
-      const safeUser = { ...updatedUser, isActive: updatedUser.isActive ?? false };
+      const safeUser: User = {
+        ...updatedUser,
+        isActive: updatedUser.isActive ?? false,
+      };
 
       setUsers((prev) =>
         prev.map((u) => (u._id === id ? safeUser : u))
       );
-
       setFilteredUsers((prev) =>
         prev.map((u) => (u._id === id ? safeUser : u))
       );
@@ -138,8 +136,16 @@ const AllUsers = () => {
     try {
       await deleteUser(id);
 
-      setUsers((prev) => prev.filter((u) => u._id !== id).map(u => ({ ...u, isActive: u.isActive ?? false })));
-      setFilteredUsers((prev) => prev.filter((u) => u._id !== id).map(u => ({ ...u, isActive: u.isActive ?? false })));
+      setUsers((prev) =>
+        prev
+          .filter((u) => u._id !== id)
+          .map((u) => ({ ...u, isActive: u.isActive ?? false }))
+      );
+      setFilteredUsers((prev) =>
+        prev
+          .filter((u) => u._id !== id)
+          .map((u) => ({ ...u, isActive: u.isActive ?? false }))
+      );
 
       alert("User deleted successfully!");
     } catch (err: any) {
