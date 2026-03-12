@@ -1,9 +1,19 @@
 // controllers/dashboardController.js
-const Client = require("../models/client.js");
-
+const Client = require("../models/Client");
 exports.getDashboardOverview = async (req, res) => {
   try {
-    const clients = await Client.find();
+    const totalClients = await Client.countDocuments();
+
+    const services = await Client.aggregate([
+      { $unwind: "$services" },
+      {
+        $group: {
+          _id: { $toLower: "$services.serviceType" },
+          count: { $sum: 1 },
+          revenue: { $sum: { $ifNull: ["$services.amount", 0] } },
+        },
+      },
+    ]);
 
     let totalRevenue = 0;
 
@@ -14,24 +24,23 @@ exports.getDashboardOverview = async (req, res) => {
       amc: { count: 0, revenue: 0 },
     };
 
-    clients.forEach((client) => {
-      if (!client.services || client.services.length === 0) return;
+    services.forEach((service) => {
+      const type = service._id;
 
-      client.services.forEach((service) => {
-        const type = service.serviceType.toLowerCase();
-        if (serviceWise[type]) {
-          serviceWise[type].count += 1;
-          serviceWise[type].revenue += service.amount || 0;
-          totalRevenue += service.amount || 0;
-        }
-      });
+      if (serviceWise[type]) {
+        serviceWise[type].count = service.count;
+        serviceWise[type].revenue = service.revenue;
+      }
+
+      totalRevenue += service.revenue;
     });
 
     res.status(200).json({
-      totalClients: clients.length,
+      totalClients,
       totalRevenue,
       serviceWise,
     });
+
   } catch (error) {
     console.error("Dashboard Error:", error);
     res.status(500).json({ message: "Server Error" });
