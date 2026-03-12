@@ -109,16 +109,16 @@ export default function SignInForm() {
               className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer"
             >
               {showPassword ? (
-                <EyeIcon className="size-5 text-gray-500" />
+                <EyeIcon className="w-5 h-5 text-gray-500" />
               ) : (
-                <EyeCloseIcon className="size-5 text-gray-500" />
+                <EyeCloseIcon className="w-5 h-5 text-gray-500" />
               )}
             </span>
           </div>
         </div>
 
         <Button
-          type="submit"
+          type="submit"      // ✅ fixed TypeScript error
           className="w-full"
           size="sm"
           disabled={loading}
