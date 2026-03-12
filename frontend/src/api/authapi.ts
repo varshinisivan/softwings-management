@@ -1,3 +1,4 @@
+// src/api/authapi.ts
 import api from "./api";
 
 // ==================
@@ -34,14 +35,25 @@ export interface AuthResponse {
 export const login = async (
   payload: LoginPayload
 ): Promise<AuthResponse> => {
-  const response = await api.post<AuthResponse>("/users/login", payload);
+  try {
+    // ✅ Make sure API uses the environment variable for backend
+    const response = await api.post<AuthResponse>("/users/login", payload);
 
-  if (response.data.token) {
-    // ✅ Only store token
-    localStorage.setItem("token", response.data.token);
+    if (response.data.token) {
+      // Store token in localStorage
+      localStorage.setItem("token", response.data.token);
+    }
+
+    return response.data;
+  } catch (err: any) {
+    // Return a consistent AuthResponse even on error
+    return {
+      success: false,
+      message:
+        err.response?.data?.message ||
+        "Login failed. Please check your credentials.",
+    };
   }
-
-  return response.data;
 };
 
 // ==================
@@ -50,12 +62,17 @@ export const login = async (
 export const register = async (
   payload: RegisterPayload
 ): Promise<AuthResponse> => {
-  const response = await api.post<AuthResponse>(
-    "/users/register",
-    payload
-  );
-
-  return response.data;
+  try {
+    const response = await api.post<AuthResponse>("/users/register", payload);
+    return response.data;
+  } catch (err: any) {
+    return {
+      success: false,
+      message:
+        err.response?.data?.message ||
+        "Registration failed. Please try again.",
+    };
+  }
 };
 
 // ==================
