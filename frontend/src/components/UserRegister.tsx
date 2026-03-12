@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { register } from "../api/authapi";
 import InputField from "./form/input/InputField";
-import Button from "./ui/Button/Button";
 import Label from "./form/Label";
+import Button from "./ui/button/Button"; // ✅ ensure path is correct
 
 interface FormData {
   name: string;
@@ -146,13 +146,14 @@ const UserRegister = () => {
 
           {/* Button */}
           <div className="pt-2">
-            <button
+            <Button
               type="submit"
+              size="sm"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-indigo-500 to-blue-600 text-white py-2.5 rounded-xl font-semibold shadow-md hover:shadow-lg hover:scale-[1.02] transition duration-300 disabled:opacity-60"
+              className="w-full"
             >
               {loading ? "Registering..." : "Register User"}
-            </button>
+            </Button>
           </div>
 
         </form>

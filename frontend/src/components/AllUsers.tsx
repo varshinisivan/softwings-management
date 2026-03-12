@@ -47,11 +47,12 @@ const AllUsers = () => {
         return;
       }
 
-      // Normalize _id: use Mongo _id or fallback
+      // Normalize _id: use Mongo _id or fallback, ensure isActive boolean
       const normalizedUsers = res.map((u) => ({
         ...u,
-        _id: u._id || u.id || "", // ensure _id exists
+        _id: u._id || u.id || "",
         name: u.name || u.fullName || "",
+        isActive: u.isActive ?? false, // ✅ ensure boolean
       }));
 
       setUsers(normalizedUsers);
@@ -111,12 +112,15 @@ const AllUsers = () => {
 
       const updatedUser = await updateUser(id, payload);
 
+      // ✅ ensure isActive is boolean
+      const safeUser = { ...updatedUser, isActive: updatedUser.isActive ?? false };
+
       setUsers((prev) =>
-        prev.map((u) => (u._id === id ? updatedUser : u))
+        prev.map((u) => (u._id === id ? safeUser : u))
       );
 
       setFilteredUsers((prev) =>
-        prev.map((u) => (u._id === id ? updatedUser : u))
+        prev.map((u) => (u._id === id ? safeUser : u))
       );
 
       cancelEditing();
@@ -134,8 +138,8 @@ const AllUsers = () => {
     try {
       await deleteUser(id);
 
-      setUsers((prev) => prev.filter((u) => u._id !== id));
-      setFilteredUsers((prev) => prev.filter((u) => u._id !== id));
+      setUsers((prev) => prev.filter((u) => u._id !== id).map(u => ({ ...u, isActive: u.isActive ?? false })));
+      setFilteredUsers((prev) => prev.filter((u) => u._id !== id).map(u => ({ ...u, isActive: u.isActive ?? false })));
 
       alert("User deleted successfully!");
     } catch (err: any) {
