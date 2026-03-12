@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { EyeCloseIcon, EyeIcon } from "../../icons";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
-import Button from "../ui/button/Button";
+import Button from "../ui/button/Button"; // make sure this path is correct
 import { login } from "../../api/authapi";
 
 interface LoginFormState {
@@ -117,8 +117,9 @@ export default function SignInForm() {
           </div>
         </div>
 
+        {/* Fixed TypeScript issue by allowing type in Button */}
         <Button
-          type="submit"      // ✅ fixed TypeScript error
+          type="submit"
           className="w-full"
           size="sm"
           disabled={loading}
