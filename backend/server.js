@@ -11,7 +11,13 @@ const app = express();
 // -------------------------
 // Middleware
 // -------------------------
-app.use(cors());
+// ✅ Fixed CORS for production + local frontend
+app.use(
+  cors({
+    origin: ["https://your-frontend.vercel.app", "http://localhost:5173"], // replace with your frontend URLs
+    credentials: true, // allows Authorization headers and cookies
+  })
+);
 app.use(express.json());
 
 // -------------------------
@@ -29,7 +35,7 @@ const renewalRoutes = require("./routes/renewalRoutes");
 
 // ✅ Profit Report Routes (NEW)
 const reportRoutes = require("./routes/reportRoutes");
-//Dashboard Routes
+// Dashboard Routes
 const dashboardRoutes = require("./routes/dashboardRoutes");
 
 // Mount routes
