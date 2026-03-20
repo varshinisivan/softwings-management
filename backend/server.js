@@ -11,12 +11,11 @@ const app = express();
 // -------------------------
 // Middleware
 // -------------------------
-// ✅ Fixed CORS for production + local frontend
+// ✅ Fixed CORS for live frontend
 app.use(
   cors({
     origin: [
-      "https://softwings-frontend.vercel.app", // replace with your actual deployed frontend
-      "http://localhost:5173", // local frontend for testing
+      "https://softwings-frontend.vercel.app", // deployed frontend
     ],
     credentials: true, // allows Authorization headers and cookies
   })
@@ -62,9 +61,13 @@ app.get("/", (req, res) => {
 // MongoDB Connection
 // -------------------------
 const PORT = process.env.PORT || 5000;
-const MONGO_URI =
-  process.env.MONGO_URI ||
-  "mongodb://127.0.0.1:27017/softwings-management";
+const MONGO_URI = process.env.MONGO_URI;
+
+// Check that MONGO_URI exists
+if (!MONGO_URI) {
+  console.error("MongoDB connection failed: MONGO_URI is not defined!");
+  process.exit(1);
+}
 
 mongoose
   .connect(MONGO_URI)
@@ -87,7 +90,7 @@ mongoose
 app.use((err, req, res, next) => {
   console.error("Global Error:", err.stack || err);
 
-  // Return detailed error in development, friendly message in production
+  // Show detailed error only in development
   const message =
     process.env.NODE_ENV === "development"
       ? err.message || "Server Error"
