@@ -14,7 +14,10 @@ const app = express();
 // ✅ Fixed CORS for production + local frontend
 app.use(
   cors({
-    origin: ["https://your-frontend.vercel.app", "http://localhost:5173"], // replace with your frontend URLs
+    origin: [
+      "https://softwings-frontend.vercel.app", // replace with your actual deployed frontend
+      "http://localhost:5173", // local frontend for testing
+    ],
     credentials: true, // allows Authorization headers and cookies
   })
 );
@@ -35,6 +38,7 @@ const renewalRoutes = require("./routes/renewalRoutes");
 
 // ✅ Profit Report Routes (NEW)
 const reportRoutes = require("./routes/reportRoutes");
+
 // Dashboard Routes
 const dashboardRoutes = require("./routes/dashboardRoutes");
 
@@ -59,7 +63,8 @@ app.get("/", (req, res) => {
 // -------------------------
 const PORT = process.env.PORT || 5000;
 const MONGO_URI =
-  process.env.MONGO_URI || "mongodb://127.0.0.1:27017/softwings";
+  process.env.MONGO_URI ||
+  "mongodb://127.0.0.1:27017/softwings-management";
 
 mongoose
   .connect(MONGO_URI)
@@ -80,9 +85,16 @@ mongoose
 // Global Error Handler
 // -------------------------
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({
+  console.error("Global Error:", err.stack || err);
+
+  // Return detailed error in development, friendly message in production
+  const message =
+    process.env.NODE_ENV === "development"
+      ? err.message || "Server Error"
+      : "Server Error";
+
+  res.status(err.status || 500).json({
     success: false,
-    message: "Server Error",
+    message,
   });
 });
