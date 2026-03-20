@@ -32,4 +32,23 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+/**
+ * 🔥 Response interceptor to handle errors globally
+ */
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // Log full error in console for debugging
+    console.error("API Error:", error);
+
+    // Provide a friendly error message for frontend
+    const message =
+      error.response?.data?.message ||
+      error.message ||
+      "Network or server error. Please try again later.";
+
+    return Promise.reject(new Error(message));
+  }
+);
+
 export default api;
