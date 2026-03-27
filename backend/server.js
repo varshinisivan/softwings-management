@@ -12,7 +12,7 @@ const app = express();
 // Middleware
 // -------------------------
 
-// ✅ FINAL CORS FIX (Correct way)
+// ✅ FINAL CORS FIX (NO CRASH, WORKING)
 app.use(
   cors({
     origin: [
@@ -23,9 +23,6 @@ app.use(
     credentials: true,
   })
 );
-
-// ✅ Handle preflight (VERY IMPORTANT)
-app.options("*", cors());
 
 app.use(express.json());
 
