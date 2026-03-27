@@ -12,14 +12,20 @@ const app = express();
 // Middleware
 // -------------------------
 
-// ✅ FIXED CORS (Allow all for now - no more network error)
+// ✅ FINAL CORS FIX (Correct way)
 app.use(
   cors({
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: [
+      "https://softwings-management-8x4a-sigma.vercel.app"
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
+
+// ✅ Handle preflight (VERY IMPORTANT)
+app.options("*", cors());
 
 app.use(express.json());
 
@@ -27,19 +33,10 @@ app.use(express.json());
 // Routes
 // -------------------------
 
-// User Routes
 const userRoutes = require("./routes/userRoutes");
-
-// Client Routes
 const clientRoutes = require("./routes/clientRoutes");
-
-// Renewal Routes
 const renewalRoutes = require("./routes/renewalRoutes");
-
-// Profit Report Routes
 const reportRoutes = require("./routes/reportRoutes");
-
-// Dashboard Routes
 const dashboardRoutes = require("./routes/dashboardRoutes");
 
 // Mount routes
@@ -53,12 +50,10 @@ app.use("/api/reports", reportRoutes);
 // Test Routes
 // -------------------------
 
-// Root test
 app.get("/", (req, res) => {
   res.json({ message: "Backend is running ✅" });
 });
 
-// API test (IMPORTANT)
 app.get("/api", (req, res) => {
   res.json({ message: "API is working ✅" });
 });
