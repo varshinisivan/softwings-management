@@ -14,16 +14,14 @@ const {
 } = require('../controllers/usercontroller');
 
 // =====================
-// Public Route
+// Public Routes
 // =====================
 router.post('/login', loginUser);
+router.post('/register', registerUser); // ← temporary, remove after first admin is created
 
 // =====================
 // Protected Routes
 // =====================
-
-// Register (Admin & Manager only)
-router.post('/register', authMiddleware, authorizeRoles('admin', 'manager'), registerUser);
 
 // View All Users (Admin, Manager, Staff)
 router.get('/', authMiddleware, authorizeRoles('admin', 'manager', 'staff'), getAllUsers);
