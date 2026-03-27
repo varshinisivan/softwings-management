@@ -12,17 +12,8 @@ const app = express();
 // Middleware
 // -------------------------
 
-// ✅ FINAL CORS FIX (NO CRASH, WORKING)
-app.use(
-  cors({
-    origin: [
-      "https://softwings-management-8x4a-sigma.vercel.app"
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
+// ✅ FINAL FIX: Allow all origins (no more CORS issues)
+app.use(cors());
 
 app.use(express.json());
 
