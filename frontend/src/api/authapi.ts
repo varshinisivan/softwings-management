@@ -22,7 +22,7 @@ export interface AuthResponse {
   message: string;
   token?: string;
   user?: {
-    id: string;
+    _id: string;   // ✅ FIXED
     name: string;
     email: string;
     role: string;
@@ -36,17 +36,20 @@ export const login = async (
   payload: LoginPayload
 ): Promise<AuthResponse> => {
   try {
-    // ✅ Make sure API uses the environment variable for backend
     const response = await api.post<AuthResponse>("/users/login", payload);
 
     if (response.data.token) {
-      // Store token in localStorage
+      // ✅ Store token
       localStorage.setItem("token", response.data.token);
+    }
+
+    if (response.data.user) {
+      // ✅ Store user correctly
+      localStorage.setItem("user", JSON.stringify(response.data.user));
     }
 
     return response.data;
   } catch (err: any) {
-    // Return a consistent AuthResponse even on error
     return {
       success: false,
       message:
@@ -80,4 +83,5 @@ export const register = async (
 // ==================
 export const logout = (): void => {
   localStorage.removeItem("token");
+  localStorage.removeItem("user"); // ✅ added
 };

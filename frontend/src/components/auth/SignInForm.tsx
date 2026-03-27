@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { EyeCloseIcon, EyeIcon } from "../../icons";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
-import Button from "../ui/button/Button"; // make sure this path is correct
+import Button from "../ui/button/Button";
 import { login } from "../../api/authapi";
 
 interface LoginFormState {
@@ -50,14 +51,15 @@ export default function SignInForm() {
       });
 
       if (response.success) {
+        // ✅ Token already stored in authapi.ts
+        // ✅ Just redirect
         navigate("/");
       } else {
         setErrorMessage(response.message || "Login failed.");
       }
     } catch (error: any) {
       setErrorMessage(
-        error?.response?.data?.message ||
-        "Invalid email or password. Please try again."
+        error?.message || "Invalid email or password. Please try again."
       );
     } finally {
       setLoading(false);
@@ -66,7 +68,7 @@ export default function SignInForm() {
 
   return (
     <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl">
-
+      
       <h1 className="mb-6 text-2xl font-semibold text-gray-800 text-center">
         Sign In
       </h1>
@@ -117,7 +119,6 @@ export default function SignInForm() {
           </div>
         </div>
 
-        {/* Fixed TypeScript issue by allowing type in Button */}
         <Button
           type="submit"
           className="w-full"
