@@ -85,9 +85,7 @@ function App() {
           <Route path="/buttons" element={<Buttons />} />
           <Route path="/images" element={<Images />} />
           <Route path="/videos" element={<Videos />} />
-
           {/* User Management */}
-          <Route path="/user-register" element={<UserRegister />} />
           <Route path="/all-users" element={<AllUsers />} />
 
           {/* Client Management */}
@@ -103,8 +101,9 @@ function App() {
           <Route path="/profit-report" element={<ProfitReport />} />
         </Route>
 
-        {/* Public Route */}
+        {/* Public Routes */}
         <Route path="/signin" element={<SignIn />} />
+        <Route path="/user-register" element={<UserRegister />} />
 
         {/* 404 */}
         <Route path="*" element={<NotFound />} />

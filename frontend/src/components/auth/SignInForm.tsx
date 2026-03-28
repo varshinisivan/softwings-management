@@ -24,8 +24,11 @@ export default function SignInForm() {
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
+  // ✅ Clear error on input change
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+
+    setErrorMessage(""); // 🔥 FIX: remove old error
 
     setFormData((prev) => ({
       ...prev,
@@ -33,8 +36,12 @@ export default function SignInForm() {
     }));
   };
 
+  // ✅ Handle login
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // 🔥 FIX: prevent multiple API calls
+    if (loading) return;
 
     if (!formData.email.trim() || !formData.password.trim()) {
       setErrorMessage("Email and password are required.");
@@ -50,17 +57,19 @@ export default function SignInForm() {
         password: formData.password.trim(),
       });
 
+      console.log("Login response:", response); // optional debug
+
       if (response.success) {
-        // ✅ Token already stored in authapi.ts
-        // ✅ Just redirect
-        navigate("/");
+        // 🔥 FIX: clear error before redirect
+        setErrorMessage("");
+
+        // ✅ Redirect to dashboard/home
+        navigate("/", { replace: true });
       } else {
         setErrorMessage(response.message || "Login failed.");
       }
     } catch (error: any) {
-      setErrorMessage(
-        error?.message || "Invalid email or password. Please try again."
-      );
+      setErrorMessage("Invalid email or password. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -73,6 +82,7 @@ export default function SignInForm() {
         Sign In
       </h1>
 
+      {/* ✅ Error Message */}
       {errorMessage && (
         <div className="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-600">
           {errorMessage}
@@ -119,6 +129,7 @@ export default function SignInForm() {
           </div>
         </div>
 
+        {/* Button */}
         <Button
           type="submit"
           className="w-full"
