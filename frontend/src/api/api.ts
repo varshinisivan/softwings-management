@@ -2,10 +2,13 @@ import axios from "axios";
 
 /**
  * Base API URL
+ * 🔥 FIX: Use correct env variable + correct fallback
  */
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-console.log('API URL:', import.meta.env.VITE_API_URL);
-  
+const API_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://softwings-management-ram1.onrender.com"; // ✅ production fallback
+
+console.log("API URL:", API_URL);
 
 /**
  * Axios instance
@@ -39,21 +42,33 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Log full error in console for debugging
     console.error("API Error Details:", error);
 
-    // Friendly and more descriptive error messages for live
     if (error.response) {
-      // Server responded with a status outside 2xx
       const status = error.response.status;
-      const serverMessage = error.response.data?.message || error.response.statusText;
-      return Promise.reject(new Error(`Server Error (${status}): ${serverMessage}`));
+      const serverMessage =
+        error.response.data?.message || error.response.statusText;
+
+      // 🔥 Auto logout if unauthorized
+      if (status === 401) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        window.location.href = "/signin";
+      }
+
+      return Promise.reject(
+        new Error(`Server Error (${status}): ${serverMessage}`)
+      );
     } else if (error.request) {
-      // Request was made but no response received
-      return Promise.reject(new Error("No response from server. Please check your network or try again later."));
+      return Promise.reject(
+        new Error(
+          "No response from server. Please wait a few seconds and try again."
+        )
+      );
     } else {
-      // Something else happened while setting up the request
-      return Promise.reject(new Error(`Request setup error: ${error.message}`));
+      return Promise.reject(
+        new Error(`Request setup error: ${error.message}`)
+      );
     }
   }
 );
