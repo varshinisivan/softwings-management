@@ -9,11 +9,24 @@ dotenv.config();
 const app = express();
 
 // -------------------------
-// Middleware
+// ✅ CORS FIX (IMPORTANT)
 // -------------------------
 
-// ✅ FINAL FIX: Allow all origins (no more CORS issues)
-app.use(cors());
+app.use(
+  cors({
+    origin: "*", // allow all users (frontend from anywhere)
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
+
+// 🔥 Handle preflight requests
+app.options("*", cors());
+
+// -------------------------
+// Middleware
+// -------------------------
 
 app.use(express.json());
 
