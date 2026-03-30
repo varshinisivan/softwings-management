@@ -37,7 +37,7 @@ const RenewalReminder: React.FC = () => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
-    const res = await getRenewals(token);
+    const res = await getRenewals();
 
     const clientMap: Record<string, Renewal> = {};
     res.data.renewals.forEach((r: any) => {

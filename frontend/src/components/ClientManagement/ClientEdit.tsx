@@ -11,7 +11,7 @@ interface Service {
   duration: string;
   durationType: "year" | "month";
   amount: string;
-  type: string;
+  type: "hosting" | "domain" | "ssl" | "amc";
 }
 
 interface ClientData {
@@ -88,7 +88,7 @@ const ClientEdit = () => {
       };
 
       // Group services by type
-      const groupedServices = {
+      const groupedServices: ClientData['services'] = {
         hosting: [],
         domain: [],
         ssl: [],
@@ -96,7 +96,7 @@ const ClientEdit = () => {
       };
 
       (client.services || []).forEach((service: any) => {
-        const type = service.serviceType;
+        const type = service.serviceType as keyof ClientData['services'];
         if (groupedServices[type]) {
           groupedServices[type].push({
             name: service.planName || "",
@@ -261,12 +261,10 @@ const ClientEdit = () => {
     
     setSaving(true);
     try {
-      const totalAmount = calculateTotal();
-      
       // Convert grouped services back to array format for backend
-      const servicesArray = [];
-      Object.keys(clientData.services).forEach(type => {
-        clientData.services[type].forEach((service: any) => {
+      const servicesArray: any[] = [];
+      (Object.keys(clientData.services) as Array<keyof ClientData['services']>).forEach(type => {
+        clientData.services[type].forEach((service: Service) => {
           servicesArray.push({
             serviceType: type,
             planName: service.name,

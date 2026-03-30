@@ -84,6 +84,18 @@ export const getAllClients = async () => {
 };
 
 /**
+ * ================= GET CLIENT BY ID =================
+ */
+export const getClientById = async (id: string) => {
+  try {
+    const response = await api.get(`/clients/${id}`);
+    return response.data;
+  } catch (error: any) {
+    handleError(error, "Failed to fetch client");
+  }
+};
+
+/**
  * ================= UPDATE CLIENT =================
  */
 export const updateClient = async (id: string, clientData: any) => {
