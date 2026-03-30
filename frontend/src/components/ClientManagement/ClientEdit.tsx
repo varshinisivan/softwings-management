@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
 import { FaSave, FaTimes, FaPlus, FaTrash } from "react-icons/fa";
+import { getClientById, updateClient } from "../../api/clientapi";
 
 // ==================== TYPES ====================
 interface Service {
@@ -72,19 +72,9 @@ const ClientEdit = () => {
       navigate("/clients");
       return;
     }
-    
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        navigate("/signin");
-        return;
-      }
 
-      const res = await axios.get(`http://localhost:5000/api/clients/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      
-      const client = res.data;
+    try {
+      const client = await getClientById(id);
       console.log("Client edit data:", client);
 
       // Format date for input
@@ -97,52 +87,28 @@ const ClientEdit = () => {
         }
       };
 
-      // Ensure services structure exists
-      const services = client.services || {
+      // Group services by type
+      const groupedServices = {
         hosting: [],
         domain: [],
         ssl: [],
         amc: []
       };
-      
-      const formattedServices = {
-        hosting: (services.hosting || []).map((s: any) => ({
-          name: s.name || "",
-          startDate: formatDate(s.startDate),
-          expiryDate: formatDate(s.expiryDate),
-          duration: s.duration?.toString() || "1",
-          durationType: s.durationType || "year",
-          amount: s.amount?.toString() || "0",
-          type: "hosting",
-        })),
-        domain: (services.domain || []).map((s: any) => ({
-          name: s.name || "",
-          startDate: formatDate(s.startDate),
-          expiryDate: formatDate(s.expiryDate),
-          duration: s.duration?.toString() || "1",
-          durationType: s.durationType || "year",
-          amount: s.amount?.toString() || "0",
-          type: "domain",
-        })),
-        ssl: (services.ssl || []).map((s: any) => ({
-          name: s.name || "",
-          startDate: formatDate(s.startDate),
-          expiryDate: formatDate(s.expiryDate),
-          duration: s.duration?.toString() || "1",
-          durationType: s.durationType || "year",
-          amount: s.amount?.toString() || "0",
-          type: "ssl",
-        })),
-        amc: (services.amc || []).map((s: any) => ({
-          name: s.name || "",
-          startDate: formatDate(s.startDate),
-          expiryDate: formatDate(s.expiryDate),
-          duration: s.duration?.toString() || "1",
-          durationType: s.durationType || "year",
-          amount: s.amount?.toString() || "0",
-          type: "amc",
-        })),
-      };
+
+      (client.services || []).forEach((service: any) => {
+        const type = service.serviceType;
+        if (groupedServices[type]) {
+          groupedServices[type].push({
+            name: service.planName || "",
+            startDate: formatDate(service.startDate),
+            expiryDate: formatDate(service.endDate),
+            duration: service.durationMonths?.toString() || service.durationYears?.toString() || "1",
+            durationType: service.durationYears ? "year" : "month",
+            amount: service.amount?.toString() || "0",
+            type: type,
+          });
+        }
+      });
 
       setClientData({ 
         _id: client._id,
@@ -151,7 +117,7 @@ const ClientEdit = () => {
         mobile: client.mobile || "",
         contactPerson: client.contactPerson || "",
         address: client.address || "",
-        services: formattedServices,
+        services: groupedServices,
         totalAmount: client.totalAmount || 0,
       });
       
@@ -295,29 +261,36 @@ const ClientEdit = () => {
     
     setSaving(true);
     try {
-      const token = localStorage.getItem("token");
-      
       const totalAmount = calculateTotal();
       
+      // Convert grouped services back to array format for backend
+      const servicesArray = [];
+      Object.keys(clientData.services).forEach(type => {
+        clientData.services[type].forEach((service: any) => {
+          servicesArray.push({
+            serviceType: type,
+            planName: service.name,
+            startDate: service.startDate,
+            endDate: service.expiryDate,
+            durationMonths: service.durationType === "month" ? parseInt(service.duration) : 0,
+            durationYears: service.durationType === "year" ? parseInt(service.duration) : 0,
+            amount: parseFloat(service.amount),
+          });
+        });
+      });
+      
       const dataToSend = {
-        company: {
-          companyName: clientData.companyName,
-          email: clientData.email,
-          mobile: clientData.mobile,
-          contactPerson: clientData.contactPerson || "",
-          address: clientData.address || "",
-        },
-        services: clientData.services,
-        totalAmount: totalAmount,
+        companyName: clientData.companyName,
+        email: clientData.email,
+        mobile: clientData.mobile,
+        contactPerson: clientData.contactPerson || "",
+        address: clientData.address || "",
+        services: servicesArray,
       };
       
       console.log("Sending data:", dataToSend);
 
-      await axios.put(
-        `http://localhost:5000/api/clients/${clientData._id}`,
-        dataToSend,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await updateClient(clientData._id, dataToSend);
       
       alert("✅ Client updated successfully!");
       navigate(`/clients/view/${id}`);

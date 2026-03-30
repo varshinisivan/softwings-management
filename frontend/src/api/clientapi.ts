@@ -107,4 +107,40 @@ export const deleteClient = async (id: string) => {
   }
 };
 
+/**
+ * ================= UPDATE SERVICE =================
+ */
+export const updateService = async (clientId: string, serviceId: string, serviceData: any) => {
+  try {
+    const response = await api.put(`/clients/${clientId}/services/${serviceId}`, serviceData);
+    return response.data;
+  } catch (error: any) {
+    handleError(error, "Failed to update service");
+  }
+};
+
+/**
+ * ================= DELETE SERVICE =================
+ */
+export const deleteService = async (clientId: string, serviceId: string) => {
+  try {
+    const response = await api.delete(`/clients/${clientId}/services/${serviceId}`);
+    return response.data;
+  } catch (error: any) {
+    handleError(error, "Failed to delete service");
+  }
+};
+
+/**
+ * ================= ADD SERVICE =================
+ */
+export const addService = async (clientId: string, serviceData: any) => {
+  try {
+    const response = await api.post(`/clients/${clientId}/services`, serviceData);
+    return response.data;
+  } catch (error: any) {
+    handleError(error, "Failed to add service");
+  }
+};
+
 export default api;

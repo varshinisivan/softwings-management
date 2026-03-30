@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useParams } from "react-router-dom";
 import { FaEdit, FaTrash, FaPlus, FaTimes, FaSave } from "react-icons/fa";
+import { getClientById, updateService, deleteService, addService } from "../../api/clientapi";
 
 interface Service {
   _id: string;
@@ -34,8 +34,8 @@ const ViewClient: React.FC = () => {
 
   // ================= FETCH CLIENT =================
   const fetchClient = async () => {
-    const res = await axios.get(`http://localhost:5000/api/clients/${id}`);
-    setClient(res.data);
+    const data = await getClientById(id!);
+    setClient(data);
   };
 
   useEffect(() => {
@@ -70,10 +70,7 @@ const ViewClient: React.FC = () => {
   };
 
   const handleSave = async () => {
-    await axios.put(
-      `http://localhost:5000/api/clients/${id}/services/${editingServiceId}`,
-      editData
-    );
+    await updateService(id!, editingServiceId!, editData);
     setEditingServiceId(null);
     fetchClient();
   };
@@ -87,15 +84,13 @@ const ViewClient: React.FC = () => {
   const handleDelete = async (serviceId: string) => {
     if (!window.confirm("Delete this service?")) return;
 
-    await axios.delete(
-      `http://localhost:5000/api/clients/${id}/services/${serviceId}`
-    );
+    await deleteService(id!, serviceId);
     fetchClient();
   };
 
   // ================= ADD =================
   const handleAddService = async () => {
-    await axios.post(`http://localhost:5000/api/clients/${id}/services`, editData);
+    await addService(id!, editData);
     setShowAddForm(false);
     setEditData({});
     fetchClient();

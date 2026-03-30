@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaEdit, FaTrash, FaSearch } from "react-icons/fa";
+import { getAllClients, deleteClient } from "../../api/clientapi";
 
 interface Service {
   serviceType: "hosting" | "domain" | "ssl" | "amc";
@@ -33,8 +33,8 @@ const AllClients: React.FC = () => {
   // ================= FETCH CLIENTS =================
   const fetchClients = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/clients");
-      setClients(res.data);
+      const data = await getAllClients();
+      setClients(data);
     } catch (error) {
       console.error("Error fetching clients:", error);
     } finally {
@@ -51,7 +51,7 @@ const AllClients: React.FC = () => {
     if (!window.confirm("Are you sure you want to delete this client?")) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/clients/${id}`);
+      await deleteClient(id);
       fetchClients();
     } catch (error) {
       console.error("Delete error:", error);

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { register } from "../../api/authapi";
 import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "../../icons";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
@@ -28,14 +28,14 @@ export default function SignUpForm() {
     setErrorMessage("");
 
     try {
-      const response = await axios.post("http://localhost:5000/api/users/register", {
+      const response = await register({
         name: (fname + " " + lname).trim(),
         email: email.trim(),
         password,
         role,
       });
 
-      alert(response.data.message);
+      alert(response.message);
       navigate("/signin");
 
     } catch (error: any) {

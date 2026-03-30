@@ -1,9 +1,6 @@
-import axios from "axios";
+import api from "./api"; // your axios instance
 
-const API_URL = "http://localhost:5000/api/renewals";
-
-export const getRenewals = async (token: string) => {
-  return axios.get(API_URL, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const getRenewals = async () => {
+  const response = await api.get("/renewals");
+  return response.data;
 };

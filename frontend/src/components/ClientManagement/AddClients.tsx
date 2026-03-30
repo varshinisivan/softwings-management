@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { addClient } from "../../api/clientapi";
 
 type ServiceType = "hosting" | "domain" | "ssl" | "amc";
 
@@ -123,7 +123,7 @@ const AddClient: React.FC = () => {
     if (!validateForm()) return;
 
     try {
-      await axios.post("http://localhost:5000/api/clients", {
+      await addClient({
         ...clientData,
         services,
       });

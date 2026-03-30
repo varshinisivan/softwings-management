@@ -1,11 +1,7 @@
-import axios from "axios";
-
-const API = axios.create({
-  baseURL: "http://localhost:5000/api",
-});
+import api from "./api";
 
 // ✅ Get Profit Report
 export const getProfitReport = async () => {
-  const response = await API.get("/reports/profit");
+  const response = await api.get("/reports/profit");
   return response.data;
 };
