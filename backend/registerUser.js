@@ -1,49 +1,38 @@
-// registerUser.js
-import mongoose from "mongoose";
-import dotenv from "dotenv";
-import bcrypt from "bcryptjs";
-import User from "./models/User.js"; // adjust path if needed
+// registerUser.js - CommonJS version
+const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
+const User = require("./models/user.js");
 
-dotenv.config();
-
-// -----------------------
-// CONFIG
-// -----------------------
-const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/softwings";
+// MongoDB connection
+const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/softwings-management";
 
 // User info to register
 const NEW_USER = {
-  name: "Charu",
-  email: "charu@gmail.com",
-  password: "123456",   // you can change this
-  role: "admin",        // staff, manager, or admin
+  name: "Admin User",
+  email: "admin@softwings.com",
+  password: "admin123",
+  role: "admin",
   isActive: true,
 };
 
-// -----------------------
-// CONNECT TO MONGO
-// -----------------------
-mongoose
-  .connect(MONGO_URI)
-  .then(() => console.log("MongoDB connected"))
-  .catch((err) => {
-    console.error("MongoDB connection error:", err);
-    process.exit(1);
-  });
-
-// -----------------------
-// REGISTER USER
-// -----------------------
-const registerUser = async () => {
+async function registerUser() {
   try {
+    console.log("🔄 Connecting to MongoDB...");
+    await mongoose.connect(MONGO_URI);
+    console.log("✅ Connected to MongoDB");
+
     // Check if user already exists
     const existingUser = await User.findOne({ email: NEW_USER.email });
     if (existingUser) {
-      console.log("User already exists!");
-      process.exit(0);
+      console.log(`⚠️  User ${NEW_USER.email} already exists!`);
+      console.log("You can login with:");
+      console.log(`📧 Email: ${NEW_USER.email}`);
+      console.log(`🔑 Password: ${NEW_USER.password}`);
+      return;
     }
 
     // Hash password
+    console.log("🔄 Hashing password...");
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(NEW_USER.password, salt);
 
@@ -54,12 +43,18 @@ const registerUser = async () => {
     });
 
     await user.save();
-    console.log(`User ${NEW_USER.email} registered successfully!`);
-    process.exit(0);
-  } catch (err) {
-    console.error("Error registering user:", err);
-    process.exit(1);
+    console.log(`✅ User ${NEW_USER.email} registered successfully!`);
+    console.log("\n🚀 LOGIN CREDENTIALS:");
+    console.log(`📧 Email: ${NEW_USER.email}`);
+    console.log(`🔑 Password: ${NEW_USER.password}`);
+    console.log(`👤 Role: ${NEW_USER.role}`);
+
+  } catch (error) {
+    console.error("❌ Error registering user:", error.message);
+  } finally {
+    await mongoose.connection.close();
+    console.log("🔌 Database connection closed");
   }
-};
+}
 
 registerUser();

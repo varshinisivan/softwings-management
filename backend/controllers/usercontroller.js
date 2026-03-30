@@ -77,8 +77,10 @@ exports.loginUser = async (req, res) => {
 
   try {
     const user = await User.findOne({ email });
+    console.log('User found:', user ? 'Yes' : 'No');
 
     if (!user) {
+      console.log('User not found for email:', email);
       return res.status(400).json({
         success: false,
         message: "Invalid credentials",
@@ -86,8 +88,10 @@ exports.loginUser = async (req, res) => {
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
+    console.log('Password valid:', isMatch);
 
     if (!isMatch) {
+      console.log('Invalid password for user:', email);
       return res.status(400).json({
         success: false,
         message: "Invalid credentials",
@@ -106,6 +110,8 @@ exports.loginUser = async (req, res) => {
       process.env.JWT_SECRET || "secretkey",
       { expiresIn: "1h" }
     );
+
+    console.log('Login successful for user:', email);
 
     res.status(200).json({
       success: true,

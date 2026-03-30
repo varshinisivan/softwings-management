@@ -19,7 +19,13 @@ app.use(
       "http://localhost:5173", 
       "https://softwings-management.vercel.app",
       "https://softwings-management-git-main-varshinisivans-projects.vercel.app",
-      "https://softwings-management-ram1.onrender.com"
+      "https://softwings-management-ram1.onrender.com",
+      // Add wildcard for Vercel preview deployments
+      /^https:\/\/softwings-management.*\.vercel\.app$/,
+      // Allow all localhost ports for development
+      /^http:\/\/localhost:\d+$/,
+      // Allow all Vercel domains
+      /^https:\/\/.*\.vercel\.app$/
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
