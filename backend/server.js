@@ -14,9 +14,16 @@ const app = express();
 
 app.use(
   cors({
-    origin: "*",
+    origin: [
+      "http://localhost:3000",
+      "http://localhost:5173", 
+      "https://softwings-management.vercel.app",
+      "https://softwings-management-git-main-varshinisivans-projects.vercel.app",
+      "https://softwings-management-ram1.onrender.com"
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true
   })
 );
 
@@ -25,6 +32,12 @@ app.use(
 // -------------------------
 
 app.use(express.json());
+
+// Add request logging for debugging
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  next();
+});
 
 // -------------------------
 // Routes
@@ -48,11 +61,27 @@ app.use("/api/reports", reportRoutes);
 // -------------------------
 
 app.get("/", (req, res) => {
-  res.json({ message: "Backend is running ✅" });
+  res.json({ 
+    message: "Backend is running ✅",
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
 });
 
 app.get("/api", (req, res) => {
-  res.json({ message: "API is working ✅" });
+  res.json({ 
+    message: "API is working ✅",
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Health check endpoint
+app.get("/api/health", (req, res) => {
+  res.json({
+    status: "healthy",
+    timestamp: new Date().toISOString(),
+    mongodb: mongoose.connection.readyState === 1 ? "connected" : "disconnected"
+  });
 });
 
 // -------------------------
