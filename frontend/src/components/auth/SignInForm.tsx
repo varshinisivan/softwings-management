@@ -52,6 +52,9 @@ export default function SignInForm() {
       setLoading(true);
       setErrorMessage("");
 
+      console.log('Attempting login with:', { email: formData.email.trim(), password: '***' });
+      console.log('API Base URL:', import.meta.env.VITE_API_BASE_URL);
+
       const response = await login({
         email: formData.email.trim(),
         password: formData.password.trim(),
@@ -60,15 +63,19 @@ export default function SignInForm() {
       console.log("Login response:", response); // optional debug
 
       if (response.success) {
+        console.log('Login successful, token stored:', !!response.token);
         // 🔥 FIX: clear error before redirect
         setErrorMessage("");
 
         // ✅ Redirect to dashboard/home
         navigate("/", { replace: true });
       } else {
+        console.log('Login failed:', response.message);
         setErrorMessage(response.message || "Login failed.");
       }
     } catch (error: any) {
+      console.error('Login error:', error);
+      console.error('Error response:', error.response?.data);
       setErrorMessage("Invalid email or password. Please try again.");
     } finally {
       setLoading(false);

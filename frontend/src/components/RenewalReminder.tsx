@@ -35,36 +35,55 @@ const RenewalReminder: React.FC = () => {
 
   const fetchData = async () => {
     const token = localStorage.getItem("token");
-    if (!token) return;
+    console.log('Token exists:', !!token);
+    if (!token) {
+      console.log('No token found, skipping renewal fetch');
+      return;
+    }
 
-    const res = await getRenewals();
+    try {
+      console.log('Fetching renewals...');
+      const res = await getRenewals();
+      console.log('Renewals response:', res);
 
-    const clientMap: Record<string, Renewal> = {};
-    res.data.renewals.forEach((r: any) => {
-      if (!clientMap[r.companyName]) {
-        clientMap[r.companyName] = {
-          companyName: r.companyName,
-          contactPerson: r.contactPerson,
-          mobile: r.mobile,
-          email: r.email,
-          services: [],
-        };
-      }
-      clientMap[r.companyName].services.push({
-        serviceType: r.serviceType,
-        serviceName: r.serviceName,
-        amount: r.amount,
-        expiryDate: r.expiryDate,
-        daysRemaining: r.daysRemaining,
+      const clientMap: Record<string, Renewal> = {};
+      res.data.renewals.forEach((r: any) => {
+        console.log('Processing renewal:', r);
+        if (!clientMap[r.companyName]) {
+          clientMap[r.companyName] = {
+            companyName: r.companyName,
+            contactPerson: r.contactPerson,
+            mobile: r.mobile,
+            email: r.email,
+            services: [],
+          };
+        }
+        clientMap[r.companyName].services.push({
+          serviceType: r.serviceType,
+          serviceName: r.serviceName,
+          amount: r.amount,
+          expiryDate: r.expiryDate,
+          daysRemaining: r.daysRemaining,
+        });
       });
-    });
 
-    setRenewals(Object.values(clientMap));
-    setSummary({
-      totalRenewals: res.data.totalRenewals,
-      expectedRevenue: res.data.expectedRevenue,
-      urgentRenewals: res.data.urgentRenewals,
-    });
+      const renewalArray = Object.values(clientMap);
+      console.log('Final renewals array:', renewalArray);
+      console.log('Summary:', {
+        totalRenewals: res.data.totalRenewals,
+        expectedRevenue: res.data.expectedRevenue,
+        urgentRenewals: res.data.urgentRenewals,
+      });
+
+      setRenewals(renewalArray);
+      setSummary({
+        totalRenewals: res.data.totalRenewals,
+        expectedRevenue: res.data.expectedRevenue,
+        urgentRenewals: res.data.urgentRenewals,
+      });
+    } catch (error) {
+      console.error('Error fetching renewals:', error);
+    }
   };
 
   const filteredRenewals = renewals.filter((client) =>

@@ -1,9 +1,9 @@
 import axios from "axios";
 
 /**
- * ✅ Use correct env variable
+ * ✅ Use correct env variable with fallback
  */
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://softwings-management-ram1.onrender.com";
 
 if (!BASE_URL) {
   throw new Error("VITE_API_BASE_URL is not defined");
