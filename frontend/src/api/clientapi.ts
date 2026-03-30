@@ -5,18 +5,15 @@ import axios from "axios";
  */
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-/**
- * ❌ If env is missing → fail early (important)
- */
 if (!BASE_URL) {
-  throw new Error("VITE_API_BASE_URL is not defined in environment variables");
+  throw new Error("VITE_API_BASE_URL is not defined");
 }
 
 /**
- * ✅ Axios instance (clean + reusable)
+ * ✅ Correct baseURL (FIXED)
  */
 const api = axios.create({
-  baseURL: `${BASE_URL}/api/clients`,
+  baseURL: `${BASE_URL}/api`, // ✅ FIXED HERE
   headers: {
     "Content-Type": "application/json",
   },
@@ -49,7 +46,6 @@ const handleError = (error: any, defaultMessage: string) => {
       error.response.data?.message || error.response.statusText;
 
     if (error.response.status === 401) {
-      // Optional: auto logout
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       window.location.href = "/signin";
@@ -68,7 +64,7 @@ const handleError = (error: any, defaultMessage: string) => {
  */
 export const addClient = async (clientData: any) => {
   try {
-    const response = await api.post("/", clientData);
+    const response = await api.post("/clients", clientData);
     return response.data;
   } catch (error: any) {
     handleError(error, "Failed to add client");
@@ -80,7 +76,7 @@ export const addClient = async (clientData: any) => {
  */
 export const getAllClients = async () => {
   try {
-    const response = await api.get("/");
+    const response = await api.get("/clients");
     return response.data;
   } catch (error: any) {
     handleError(error, "Failed to fetch clients");
@@ -92,7 +88,7 @@ export const getAllClients = async () => {
  */
 export const updateClient = async (id: string, clientData: any) => {
   try {
-    const response = await api.put(`/${id}`, clientData);
+    const response = await api.put(`/clients/${id}`, clientData);
     return response.data;
   } catch (error: any) {
     handleError(error, "Failed to update client");
@@ -104,9 +100,11 @@ export const updateClient = async (id: string, clientData: any) => {
  */
 export const deleteClient = async (id: string) => {
   try {
-    const response = await api.delete(`/${id}`);
+    const response = await api.delete(`/clients/${id}`);
     return response.data;
   } catch (error: any) {
     handleError(error, "Failed to delete client");
   }
 };
+
+export default api;
